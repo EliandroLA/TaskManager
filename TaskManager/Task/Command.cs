@@ -33,6 +33,8 @@ namespace TaskManager.Task
             Util.Commands.Add("ForEachItem", ForEachItem);
             Util.Commands.Add("ForEachRow", ForEachRow);
             Util.Commands.Add("CreateList", CreateList);
+            Util.Commands.Add("SetGlobal", SetGlobal);
+            Util.Commands.Add("GetGlobal", GetGlobal);
             Util.Commands.Add("SendEmail", SendEmail);
             Util.Commands.Add("FromFixed", FromFixed);
             Util.Commands.Add("FromItem", FromItem);
@@ -154,14 +156,14 @@ namespace TaskManager.Task
         }
         static internal TaskResult ChildOnTrue(Task task, TaskResult result)
         {
-            if ((bool)Get(task, 0, result))
+            if (Convert.ToBoolean(Get(task, 0, result)))
                 ExecuteAllChild(task, result);
 
             return result;
         }
         static internal TaskResult ChildOnFalse(Task task, TaskResult result)
         {
-            if (!(bool)Get(task, 0, result))
+            if (!Convert.ToBoolean(Get(task, 0, result)))
                 ExecuteAllChild(task, result);
 
             return result;
@@ -281,6 +283,7 @@ namespace TaskManager.Task
             ExecuteAllChild(task, result);
             return result;
         }
+
         ///////>   Falta testar
 
         static internal TaskResult SetGlobal(Task task, TaskResult result)
@@ -374,7 +377,7 @@ namespace TaskManager.Task
             }
             else if (task.Params[index].StartsWith("@"))
             {
-                return Util.Global[task.Params[index].TrimStart('@')];
+                return new FOrDB.FOrDB("TaskManager").Tables["Global"].Load().First(w => w.Key == task.Name).Value;
             }
             else if (task.Params[index].Equals("#"))
             {

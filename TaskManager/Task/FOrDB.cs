@@ -65,7 +65,8 @@ namespace TaskManager.Task.FOrDB
 
                 foreach (var item in list)
                 {
-                    var fileId = item.Substring(item.LastIndexOf('\\')).TrimStart('\\').TrimEnd((".jsonf").ToCharArray());
+                    var fileId = item.Substring(item.LastIndexOf('\\')).TrimStart('\\');
+                    fileId = fileId.Substring(0, fileId.Length - (fileId.Length - fileId.LastIndexOf(".")));
                     var content = File.ReadAllText(item);
                     convertedList.Add(fileId, content);
                 }
@@ -73,7 +74,7 @@ namespace TaskManager.Task.FOrDB
             }
             public Dictionary<string,T> Load<T>()
             {
-                var list = Directory.GetFiles(TablePath, "*.jsonf");
+                var list = Directory.GetFiles(TablePath, "R*.jsonf");
                 var convertedList = new Dictionary<string,T>();
 
                 foreach (var item in list)
@@ -87,9 +88,11 @@ namespace TaskManager.Task.FOrDB
             }
             public void Insert(object value)
             {
-                var fileName = TablePath + @"\" + (GetHashCode() + DateTime.Now.Ticks) + ".jsonf";
-                File.Create(fileName).Close();
-                File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented));
+                var fileName = (GetHashCode() + DateTime.Now.Ticks) + ".jsonf";
+                var filePath = TablePath + @"\";
+                File.Create(filePath + fileName).Close();
+                File.WriteAllText(filePath + fileName, Newtonsoft.Json.JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented));
+                File.Move(filePath + fileName, filePath + "R" + fileName);
             }
             public void Insert(string id, object value)
             {

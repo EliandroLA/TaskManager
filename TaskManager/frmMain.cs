@@ -79,6 +79,7 @@ namespace TaskManager
             db.CreateTable("Internal_Task");
             db.CreateTable("Resources");
             db.Tables["Task"].Clear();
+            db.Tables["Global"].Clear();
 
             InitialToTask();
 
@@ -168,6 +169,8 @@ namespace TaskManager
                 default:
                     break;
             }
+
+            if (showOutput) TaskGenerator("SetGlobal TaskStatus " + _status.ToString());
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -231,7 +234,13 @@ namespace TaskManager
                 isBrother = exe.StartsWith(">");
                 exe = exe.TrimStart('>');
                 args.RemoveAt(0);
-                tk = new Task.Task(DateTime.Now.Ticks.ToString(),exe, args.ToArray());
+                var name = DateTime.Now.Ticks.ToString();
+                if (args.Count > 0)
+                {
+                    name = args[0];
+                    if (args.Count > 1) { args.RemoveAt(0); }
+                }
+                tk = new Task.Task(name,exe, args.ToArray());
                 if(isBrother)
                     tkFatherF.Add(tk);
                 else
@@ -243,11 +252,11 @@ namespace TaskManager
             try
             {
                 var result = tkExe.Execute();
-
                 foreach (var item in result.Values)
                 {
-                    WriteOutput(": " + item.Value);
+                    WriteOutput(": " + item.Value.ToString());
                 }
+                
             }
             catch (Exception ex)
             {

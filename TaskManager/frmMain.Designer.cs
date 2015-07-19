@@ -62,6 +62,7 @@
             // tbxInput
             // 
             this.tbxInput.BackColor = System.Drawing.Color.Black;
+            this.tbxInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbxInput.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tbxInput.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbxInput.ForeColor = System.Drawing.Color.White;
@@ -74,13 +75,14 @@
             // tbxOutput
             // 
             this.tbxOutput.BackColor = System.Drawing.Color.Black;
+            this.tbxOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tbxOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbxOutput.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbxOutput.ForeColor = System.Drawing.Color.White;
             this.tbxOutput.Location = new System.Drawing.Point(3, 3);
             this.tbxOutput.Multiline = true;
             this.tbxOutput.Name = "tbxOutput";
-            this.tbxOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbxOutput.ReadOnly = true;
             this.tbxOutput.Size = new System.Drawing.Size(534, 169);
             this.tbxOutput.TabIndex = 5;
             // 
@@ -88,7 +90,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DimGray;
+            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(540, 263);
             this.Controls.Add(this.tbxOutput);
             this.Controls.Add(this.tbxInput);
