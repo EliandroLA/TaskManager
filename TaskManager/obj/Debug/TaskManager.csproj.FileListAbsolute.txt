@@ -26,3 +26,16 @@ C:\Users\Usuario\Documents\GitHub\Projetos\TaskManager\TaskManager\obj\Debug\Tas
 C:\Users\Usuario\Documents\GitHub\Projetos\TaskManager\TaskManager\obj\Debug\TaskManager.frmMain.resources
 C:\Users\Usuario\Documents\GitHub\Projetos\TaskManager\TaskManager\obj\Debug\TaskManager.Properties.Resources.resources
 C:\Users\Usuario\Documents\GitHub\Projetos\TaskManager\TaskManager\obj\Debug\TaskManager.csproj.GenerateResource.Cache
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\TaskManager.exe.config
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.exe
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.csprojResolveAssemblyReference.cache
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.frmMain.resources
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.Properties.Resources.resources
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\obj\Debug\TaskManager.csproj.GenerateResource.Cache
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\TaskManager.exe
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\TaskManager.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\TCPCom.dll
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\Front.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\TaskManager\bin\Debug\TCPCom.pdb

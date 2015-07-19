@@ -29,6 +29,7 @@ namespace TaskManager.Task
             Util.Commands.Add("ChildOnTrue", ChildOnTrue);
             Util.Commands.Add("CreateTable", CreateTable);
             Util.Commands.Add("AddIntoList", AddIntoList);
+            Util.Commands.Add("SetResource", SetResource);
             Util.Commands.Add("ForEachItem", ForEachItem);
             Util.Commands.Add("ForEachRow", ForEachRow);
             Util.Commands.Add("CreateList", CreateList);
@@ -119,7 +120,10 @@ namespace TaskManager.Task
         }
         static internal TaskResult Return(Task task, TaskResult result)
         {
-            result.AddReturn(task.Name, Get(task, 0, result));
+            for (int i = 0; i < task.Params.Count; i++)
+            {
+                result.AddReturn(task.Name + i, Get(task, i, result));
+            }
             ExecuteAllChild(task, result);
             return result;
         }
@@ -210,10 +214,14 @@ namespace TaskManager.Task
         {
             var value = false;
             var process = Get(task, 0, result).ToString();
-            var ipAddress = Get(task, 1, result).ToString();
+            var ipAddress = "localhost";
 
-            ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.Any(a => a.ToString().Equals(ipAddress)) ? "localhost" : ipAddress;
-
+            if (task.Params.Count > 1)
+            {
+                ipAddress = Get(task, 1, result).ToString();
+                ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.Any(a => a.ToString().Equals(ipAddress)) ? "localhost" : ipAddress;
+            }
+            
             if (ipAddress.ToLower().Equals("localhost"))
             {
                 value = Process.GetProcessesByName(process).Length > 0;
@@ -260,6 +268,16 @@ namespace TaskManager.Task
             mail.Body = Get(task, 8, result).ToString() + Environment.NewLine + Environment.NewLine + "---" + Environment.NewLine + "E-Mail enviado através do TaskManager (" +Environment.MachineName + ")";
             client.Send(mail);
 
+            ExecuteAllChild(task, result);
+            return result;
+        }
+        static internal TaskResult SetResource(Task task, TaskResult result)
+        {
+            var list = task.Params.ToList();
+            list.RemoveAt(0);
+
+            var db = new FOrDB.FOrDB("TaskManager");
+            db.Tables["Resources"].Insert(Get(task, 0, result).ToString(), list);
             ExecuteAllChild(task, result);
             return result;
         }

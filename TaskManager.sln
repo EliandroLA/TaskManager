@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager", "TaskManager\TaskManager.csproj", "{1917F196-EC66-4B07-933B-898ECA47B345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPCom", "..\..\..\Visual Studio 2013\Projects\TCPCom\TCPCom\TCPCom.csproj", "{A03F1A6F-F5F8-423B-9148-FE9BA0A50845}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{1917F196-EC66-4B07-933B-898ECA47B345}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1917F196-EC66-4B07-933B-898ECA47B345}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1917F196-EC66-4B07-933B-898ECA47B345}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A03F1A6F-F5F8-423B-9148-FE9BA0A50845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A03F1A6F-F5F8-423B-9148-FE9BA0A50845}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A03F1A6F-F5F8-423B-9148-FE9BA0A50845}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A03F1A6F-F5F8-423B-9148-FE9BA0A50845}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

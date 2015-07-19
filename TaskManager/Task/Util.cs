@@ -178,7 +178,7 @@ namespace TaskManager.Task
 
     public class ExecuterTask : Task
     {
-        public DateTime NextExecute { get; set; }
+        public DateTime NextExecute { get; set; } = DateTime.Now;
         public ExecuterTask()
         {
             Command = "CommandExecuter";

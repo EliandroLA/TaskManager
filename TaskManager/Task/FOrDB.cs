@@ -91,6 +91,13 @@ namespace TaskManager.Task.FOrDB
                 File.Create(fileName).Close();
                 File.WriteAllText(fileName, Newtonsoft.Json.JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented));
             }
+            public void Insert(string id, object value)
+            {
+                var filePath = TablePath + @"\" + id + ".jsonf";
+                if (File.Exists(filePath)) File.Delete(filePath);
+                File.Create(filePath).Close();
+                File.WriteAllText(filePath, Newtonsoft.Json.JsonConvert.SerializeObject(value, Newtonsoft.Json.Formatting.Indented));
+            }
             public void Update<T>(KeyValuePair<string, T> old, object value)
             {
                 Update(old.Key, value);

@@ -27,6 +27,9 @@ namespace TaskManager
         private bool _running;
         private Status _status;
 
+        private List<string> InputList = new List<string>();
+        private int indexInput;
+
         private enum Status
         {
             Starting,
@@ -46,7 +49,8 @@ namespace TaskManager
             _server.ClientAccepted_Handler += OnAccept;
             _server.Start();
 
-            _client.Start(false, true);
+            //_client.Start(false, true);
+            CheckForIllegalCrossThreadCalls = false;
             
             Initial();
             
@@ -78,16 +82,15 @@ namespace TaskManager
 
             InitialToTask();
 
-            //var tkExe = new ExecuterTask("TesteEmail");
-            //var tkMail = new Task.Task(null, "SendEmail", "%Email");
-            //tkExe.Add(tkMail);
-
-            //db.Tables["Task_On_Open"].Insert(tkExe);
+            ReadLine();
 
             _trdExecuter = new Thread(Executer);
             _trdExecuter.Start();
 
+            tbxInput.Focus();
+            tbxInput.Select();
         }
+
         private void InitialToTask()
         {
             var list = db.Tables["Task_On_Open"].Load<ExecuterTask>();
@@ -104,7 +107,6 @@ namespace TaskManager
                 while (_running)
                 {
                     SetStatus(Status.Running);
-
                     var list = db.Tables["Task"].Load<ExecuterTask>().Where(w => w.Value.NextExecute <= DateTime.Now).ToArray();
 
                     foreach (var item in list)
@@ -125,6 +127,8 @@ namespace TaskManager
             if (_status == Status.Error && status != Status.ErrorOk) return;
             if (status == Status.ErrorOk) status = statusBeforeError;
 
+            var showOutput = _status != status;
+
             _status = status;
 
             switch (status)
@@ -135,6 +139,7 @@ namespace TaskManager
                     lblStatus.ForeColor = Color.White;
                     lblStatus.Text = "Starting";
                     btnRun.Text = "Stop";
+                    if(showOutput) WriteOutput("Iniciando");
                     break;
                 case Status.Running:
                     _running = true;
@@ -142,6 +147,7 @@ namespace TaskManager
                     lblStatus.ForeColor = Color.White;
                     lblStatus.Text = "Running";
                     btnRun.Text = "Stop";
+                    if (showOutput) WriteOutput("Executando");
                     break;
                 case Status.Stopped:
                     _running = false;
@@ -149,6 +155,7 @@ namespace TaskManager
                     lblStatus.ForeColor = Color.White;
                     lblStatus.Text = "Stopped";
                     btnRun.Text = "Run";
+                    if (showOutput) WriteOutput("Parado");
                     break;
                 case Status.Error:
                     SetStatus(Status.Stopped);
@@ -156,25 +163,124 @@ namespace TaskManager
                     lblStatus.ForeColor = Color.White;
                     lblStatus.Text = "Error";
                     btnRun.Text = "Run";
+                    if (showOutput) WriteOutput("Erro");
                     break;
                 default:
                     break;
             }
         }
 
-        private void trmRefresh_Tick(object sender, EventArgs e)
-        {
-            
-        }
-
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SetStatus(Status.Stopped);
             _closing = true;
         }
 
         private void btnRun_Click(object sender, EventArgs e)
         {
             SetStatus(_status == Status.Stopped ? Status.Running : Status.Stopped);
+        }
+
+        private void ReadLine()
+        {
+            tbxInput.Text = "";
+        }
+        private void WriteOutput(string message)
+        {
+            tbxOutput.Text += message;
+            tbxOutput.Text += Environment.NewLine;
+
+            tbxOutput.SelectionStart = tbxOutput.Text.Length;
+            tbxOutput.ScrollToCaret();
+        }
+        private void Cmd(string cmd)
+        {
+            WriteOutput("Comando: " + cmd);
+
+            switch (cmd)
+            {
+                case "Run":
+                    SetStatus(Status.Running);
+                    break;
+                case "Stop":
+                    SetStatus(Status.Stopped);
+                    break;
+                default:
+                    TaskGenerator(cmd);
+                    break;
+            }
+            if(!InputList.Contains(cmd)) InputList.Add(cmd);
+            ReadLine();
+        }
+        private void TaskGenerator(string cmdString)
+        {
+            var tkExe = new ExecuterTask("Executer");
+
+            var cmds = cmdString.Split((":").ToArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            Task.Task tk;
+            Task.Task tkFather = tkExe;
+            Task.Task tkFatherF = tkExe;
+
+            var isBrother = false;
+
+            foreach (var cmd in cmds)
+            {
+                var args = cmd.Split((" ").ToArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                var exe = args[0];
+                isBrother = exe.StartsWith(">");
+                exe = exe.TrimStart('>');
+                args.RemoveAt(0);
+                tk = new Task.Task(DateTime.Now.Ticks.ToString(),exe, args.ToArray());
+                if(isBrother)
+                    tkFatherF.Add(tk);
+                else
+                    tkFather.Add(tk);
+                tkFatherF = tkFather;
+                tkFather = tk;
+            }
+
+            try
+            {
+                var result = tkExe.Execute();
+
+                foreach (var item in result.Values)
+                {
+                    WriteOutput(": " + item.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteOutput("Não foi possível realizar comando: " + ex.Message);
+            }
+        }
+
+        private void tbxInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                if (string.IsNullOrWhiteSpace(tbxInput.Text)) return;
+                Cmd(tbxInput.Text.TrimEnd('\n'));
+                e.Handled = true;
+            }
+            else if (e.KeyData == Keys.Up)
+            {
+                indexInput--;
+                indexInput = indexInput < 0 ? 0 : indexInput;
+                if (InputList.Count - 1 >= indexInput)
+                    tbxInput.Text = InputList[indexInput];
+                e.Handled = true;
+            }
+            else if (e.KeyData == Keys.Down)
+            {
+                indexInput++;
+                indexInput = indexInput > InputList.Count ? InputList.Count : indexInput;
+                if (InputList.Count - 1 >= indexInput)
+                    tbxInput.Text = InputList[indexInput];
+                else
+                    tbxInput.Text = "";
+                e.Handled = true;
+            }
         }
     }
 }
