@@ -53,7 +53,6 @@ namespace TaskManager
             CheckForIllegalCrossThreadCalls = false;
             
             Initial();
-            
         }
 
         private void OnAccept(Client e)
@@ -105,7 +104,7 @@ namespace TaskManager
         {
             while (!_closing)
             {
-                while (_running)
+                while (Util.Running)
                 {
                     SetStatus(Status.Running);
                     var list = db.Tables["Task"].Load<ExecuterTask>().Where(w => w.Value.NextExecute <= DateTime.Now).ToArray();
@@ -181,7 +180,7 @@ namespace TaskManager
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            SetStatus(_status == Status.Stopped ? Status.Running : Status.Stopped);
+            //SetStatus(_status == Status.Stopped ? Status.Running : Status.Stopped);
         }
 
         private void ReadLine()
@@ -219,7 +218,14 @@ namespace TaskManager
         {
             var tkExe = new ExecuterTask("Executer");
 
+            cmdString = cmdString.Replace(@"C:\", "%$%");
+
             var cmds = cmdString.Split((":").ToArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < cmds.Length; i++)
+            {
+                cmds[i] = cmds[i].Replace("%$%", @"C:\");
+            }
 
             Task.Task tk;
             Task.Task tkFather = tkExe;
@@ -254,7 +260,28 @@ namespace TaskManager
                 var result = tkExe.Execute();
                 foreach (var item in result.Values)
                 {
-                    WriteOutput(": " + item.Value.ToString());
+                    if (item.Value.GetType() == typeof(List<object>))
+                    {
+                        WriteOutput(": LISTSTART: " + item.Key);
+                        foreach (var itemList in (List<object>)item.Value)
+                        {
+                            WriteOutput(": " + itemList.ToString());
+                        }
+                        WriteOutput(": LISTEND: " + item.Key);
+                    }
+                    else if (item.Value.GetType() == typeof(List<string>))
+                    {
+                        WriteOutput(": LISTSTART: " + item.Key);
+                        foreach (var itemList in (List<string>)item.Value)
+                        {
+                            WriteOutput(": " + itemList.ToString());
+                        }
+                        WriteOutput(": LISTEND: " + item.Key);
+                    }
+                    else
+                    {
+                        WriteOutput(": " + item.Value.ToString());
+                    }
                 }
                 
             }

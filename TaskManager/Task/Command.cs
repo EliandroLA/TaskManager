@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Mail;
 using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Ionic.Zip;
 
 
 namespace TaskManager.Task
@@ -46,6 +45,34 @@ namespace TaskManager.Task
             Util.Commands.Add("Shell", Shell);
             Util.Commands.Add("Kill", Kill);
             Util.Commands.Add("Ping", Ping);
+
+            Util.Commands.Add("GetFiles", GetFiles);
+            Util.Commands.Add("MoveFile", MoveFile);
+            Util.Commands.Add("MoveFileDir", MoveFileDir);
+            Util.Commands.Add("CopyFile", CopyFile);
+            Util.Commands.Add("DeleteFile", DeleteFile);
+            Util.Commands.Add("CreateFile", CreateFile);
+            Util.Commands.Add("WriteIntoFile", WriteIntoFile);
+            Util.Commands.Add("RewriteIntoFile", RewriteIntoFile);
+            Util.Commands.Add("CompareFile", CompareFile);
+            Util.Commands.Add("ExistsFile", ExistsFile);
+            Util.Commands.Add("GetFileName", GetFileName);
+            Util.Commands.Add("GetFileExtension", GetFileExtension);
+
+            Util.Commands.Add("CreateZip", CreateZip);
+            Util.Commands.Add("AddFileToZip", AddFileToZip);
+            Util.Commands.Add("AddDirectoyToZip", AddDirectoyToZip);
+            Util.Commands.Add("AddDirectoyByNameToZip", AddDirectoyByNameToZip);
+            Util.Commands.Add("SaveZip", SaveZip);
+
+            Util.Commands.Add("GetDirectories", GetDirectories);
+            Util.Commands.Add("CreateDirectory", CreateDirectory);
+            Util.Commands.Add("DeleteDirectory", DeleteDirectory);
+            Util.Commands.Add("MoveDirectory", MoveDirectory);
+            Util.Commands.Add("ExistsDirectory", ExistsDirectory);
+
+            Util.Commands.Add("TaskStop", TaskStop);
+            Util.Commands.Add("TaskStart", TaskStart);
         }
 
         static internal TaskResult CommandExecuter(Task task, TaskResult result)
@@ -64,8 +91,7 @@ namespace TaskManager.Task
         static internal TaskResult AddIntoList(Task task, TaskResult result)
         {
             ((List<object>)Get(task, 0, result)).Add(Get(task, 1, result));
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult QuerySql(Task task, TaskResult result)
         {
@@ -100,7 +126,7 @@ namespace TaskManager.Task
         static internal TaskResult ConsoleWriteLine(Task task, TaskResult result)
         {
             Console.WriteLine(Get(task, 0, result).ToString());
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult FromRow(Task task, TaskResult result)
         {
@@ -126,29 +152,9 @@ namespace TaskManager.Task
             {
                 result.AddReturn(task.Name + i, Get(task, i, result));
             }
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
-        static internal TaskResult Shell(Task task, TaskResult result)
-        {
-            if (task.Params.Count <= 1)
-            {
-                Process.Start(Get(task, 0, result).ToString());
-            }
-            else
-            {
-                Process.Start(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
-            }
 
-            ExecuteAllChild(task, result);
-            return result;
-        }
-        static internal TaskResult Kill(Task task, TaskResult result)
-        {
-            Process.GetProcessesByName(Get(task, 0, result).ToString()).ToList().ForEach(f => f.Kill());
-            ExecuteAllChild(task, result);
-            return result;
-        }
         static internal TaskResult Ping(Task task, TaskResult result)
         {
             var pingResult = new Ping().Send(Get(task, 0, result).ToString()).Status == IPStatus.Success;
@@ -178,6 +184,15 @@ namespace TaskManager.Task
                     break;
                 case "!=":
                     value = Get(task, 0, result).ToString() != Get(task, 1, result).ToString();
+                    break;
+                case "%":
+                    value = Get(task, 0, result).ToString().Contains(Get(task, 1, result).ToString());
+                    break;
+                case "%_":
+                    value = Get(task, 0, result).ToString().StartsWith(Get(task, 1, result).ToString());
+                    break;
+                case "_%":
+                    value = Get(task, 0, result).ToString().EndsWith(Get(task, 1, result).ToString());
                     break;
                 default:
                     break;
@@ -212,28 +227,8 @@ namespace TaskManager.Task
             }
             return Next(task, value, result);
         }
-        static internal TaskResult CheckByProcess(Task task, TaskResult result)
-        {
-            var value = false;
-            var process = Get(task, 0, result).ToString();
-            var ipAddress = "localhost";
 
-            if (task.Params.Count > 1)
-            {
-                ipAddress = Get(task, 1, result).ToString();
-                ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.Any(a => a.ToString().Equals(ipAddress)) ? "localhost" : ipAddress;
-            }
-            
-            if (ipAddress.ToLower().Equals("localhost"))
-            {
-                value = Process.GetProcessesByName(process).Length > 0;
-            }
-            else
-            {
-                value = CheckProcessIntoRemoteMachine(process, ipAddress, Get(task, 2, result).ToString(), Get(task, 3, result).ToString());
-            }
-            return Next(task, value, result);
-        }
+
         static internal TaskResult Retask(Task task, TaskResult result) //Tarefa para reagendamento da ExecuterTask
         {
             var seconds = 0;
@@ -253,8 +248,7 @@ namespace TaskManager.Task
             var db = new FOrDB.FOrDB("TaskManager");
             db.Tables["Task"].Insert(result.ExecuterTask);
 
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult SendEmail(Task task, TaskResult result)
         {
@@ -267,11 +261,10 @@ namespace TaskManager.Task
             client.Host = Get(task, 4, result).ToString();
             client.Credentials = new NetworkCredential(Get(task, 5, result).ToString(), Get(task, 6, result).ToString());
             mail.Subject = Get(task, 7, result).ToString();
-            mail.Body = Get(task, 8, result).ToString() + Environment.NewLine + Environment.NewLine + "---" + Environment.NewLine + "E-Mail enviado através do TaskManager (" +Environment.MachineName + ")";
+            mail.Body = Get(task, 8, result).ToString() + Environment.NewLine + Environment.NewLine + "---" + Environment.NewLine + "E-Mail enviado através do TaskManager (" + Environment.MachineName + ")";
             client.Send(mail);
 
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult SetResource(Task task, TaskResult result)
         {
@@ -280,9 +273,249 @@ namespace TaskManager.Task
 
             var db = new FOrDB.FOrDB("TaskManager");
             db.Tables["Resources"].Insert(Get(task, 0, result).ToString(), list);
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
+        static internal TaskResult TaskStart(Task task, TaskResult result)
+        {
+            Util.Running = true;
+            return Next(task, result);
+        }
+        static internal TaskResult TaskStop(Task task, TaskResult result)
+        {
+            Util.Running = false;
+            return Next(task, result);
+        }
+
+        #region CONTROLE DE PROCESSO
+        static internal TaskResult CheckByProcess(Task task, TaskResult result)
+        {
+            var value = false;
+            var process = Get(task, 0, result).ToString();
+            var ipAddress = "localhost";
+
+            if (task.Params.Count > 1)
+            {
+                ipAddress = Get(task, 1, result).ToString();
+                ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList.Any(a => a.ToString().Equals(ipAddress)) ? "localhost" : ipAddress;
+            }
+
+            if (ipAddress.ToLower().Equals("localhost"))
+            {
+                value = Process.GetProcessesByName(process).Length > 0;
+            }
+            else
+            {
+                value = CheckProcessIntoRemoteMachine(process, ipAddress, Get(task, 2, result).ToString(), Get(task, 3, result).ToString());
+            }
+            return Next(task, value, result);
+        }
+        static internal TaskResult Kill(Task task, TaskResult result)
+        {
+            Process.GetProcessesByName(Get(task, 0, result).ToString()).ToList().ForEach(f => f.Kill());
+            return Next(task, result);
+        }
+        static internal TaskResult Shell(Task task, TaskResult result)
+        {
+            if (task.Params.Count <= 1)
+            {
+                Process.Start(Get(task, 0, result).ToString());
+            }
+            else
+            {
+                Process.Start(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            }
+
+            return Next(task, result);
+        }
+
+        #endregion
+
+        #region CONTROLE DE ARQUIVOS
+        static internal TaskResult GetFiles(Task task, TaskResult result)
+        {
+            var searchPtr = "*";
+            var searchOpt = SearchOption.TopDirectoryOnly;
+
+            if (task.Params.Count > 1)
+            {
+                searchPtr = Get(task, 1, result).ToString();
+            }
+
+            if (task.Params.Count > 2)
+            {
+                searchOpt = Convert.ToBoolean(Get(task, 2, result)) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            }
+
+            var value = Directory.GetFiles(Get(task, 0, result).ToString(), searchPtr, searchOpt).ToList().ToObjectList();
+            return Next(task, value, result);
+        }
+        static internal TaskResult MoveFile(Task task, TaskResult result)
+        {
+            File.Move(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            return Next(task, result);
+
+        }
+        static internal TaskResult MoveFileDir(Task task, TaskResult result)
+        {
+            var oldPath = Get(task, 0, result).ToString();
+            var fileInfo = new FileInfo(oldPath);
+            var newPath = Get(task, 1, result).ToString() + @"\" + fileInfo.Name;
+            File.Move(Get(task, 0, result).ToString(), newPath);
+            return Next(task, result);
+
+        }
+        static internal TaskResult CopyFile(Task task, TaskResult result)
+        {
+            File.Copy(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            return Next(task, result);
+
+        }
+        static internal TaskResult DeleteFile(Task task, TaskResult result)
+        {
+            File.Delete(Get(task, 0, result).ToString());
+            return Next(task, result);
+
+        }
+        static internal TaskResult CreateFile(Task task, TaskResult result)
+        {
+            File.Create(Get(task, 0, result).ToString()).Close();
+            return Next(task, result);
+
+        }
+        static internal TaskResult WriteIntoFile(Task task, TaskResult result)
+        {
+            File.AppendAllText(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            return Next(task, result);
+
+        }
+        static internal TaskResult RewriteIntoFile(Task task, TaskResult result)
+        {
+            File.WriteAllText(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            return Next(task, result);
+
+        }
+        static internal TaskResult CompareFile(Task task, TaskResult result)
+        {
+            var bytesFileOne = File.ReadAllBytes(Get(task, 0, result).ToString());
+            var bytesFileTwo = File.ReadAllBytes(Get(task, 1, result).ToString());
+            var value = false;
+            switch (Get(task, 1, result).ToString())
+            {
+                case "==":
+                    value = bytesFileOne.Equals(bytesFileTwo);
+                    break;
+                case "!=":
+                    value = !bytesFileOne.Equals(bytesFileTwo);
+                    break;
+                default:
+                    break;
+            }
+            return Next(task, value, result);
+
+        }
+        static internal TaskResult ExistsFile(Task task, TaskResult result)
+        {
+            var value = File.Exists(Get(task, 0, result).ToString());
+            return Next(task, value, result); ;
+
+        }
+        static internal TaskResult GetFileName(Task task, TaskResult result)
+        {
+            var value = new FileInfo(Get(task, 0, result).ToString()).Name;
+            return Next(task, value, result); ;
+
+        }
+        static internal TaskResult GetFileExtension(Task task, TaskResult result)
+        {
+            var value = new FileInfo(Get(task, 0, result).ToString()).Extension;
+            return Next(task, value, result); 
+        }
+
+        #endregion
+
+        #region ZIP
+        static internal TaskResult CreateZip(Task task, TaskResult result)
+        {
+            var value = new ZipFile();
+            return Next(task, value, result);
+        }
+        static internal TaskResult AddFileToZip(Task task, TaskResult result)
+        {
+            var zip = (ZipFile)Get(task, 0, result);
+            foreach (var value in ((List<object>)Get(task, 1, result)))
+            {
+                zip.AddFile(value.ToString());
+            }
+            return Next(task, result);
+        }
+        static internal TaskResult AddDirectoyToZip(Task task, TaskResult result)
+        {
+            var zip = (ZipFile)Get(task, 0, result);
+            foreach (var value in ((List<object>)Get(task, 1, result)))
+            {
+                zip.AddDirectory(value.ToString());
+            }
+            return Next(task, result);
+        }
+        static internal TaskResult AddDirectoyByNameToZip(Task task, TaskResult result)
+        {
+            var zip = (ZipFile)Get(task, 0, result);
+            foreach (var value in ((List<object>)Get(task, 1, result)))
+            {
+                zip.AddDirectoryByName(value.ToString());
+            }
+            return Next(task, result);
+        }
+        static internal TaskResult SaveZip(Task task, TaskResult result)
+        {
+            var zip = (ZipFile)Get(task, 0, result);
+            zip.Save(Get(task, 1, result).ToString());
+            return Next(task, result);
+        }
+
+        #endregion
+
+        #region CONTROLE DE DIRETÓRIO
+        static internal TaskResult GetDirectories(Task task, TaskResult result)
+        {
+            var searchPtr = "*";
+            var searchOpt = SearchOption.TopDirectoryOnly;
+
+            if (task.Params.Count > 1)
+            {
+                searchPtr = Get(task, 1, result).ToString();
+            }
+
+            if (task.Params.Count > 2)
+            {
+                searchOpt = Convert.ToBoolean(Get(task, 2, result)) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            }
+
+            var value = Directory.EnumerateDirectories(Get(task, 0, result).ToString(), searchPtr, searchOpt).ToList().ToObjectList();
+            return Next(task, value, result);
+        }
+        static internal TaskResult CreateDirectory(Task task, TaskResult result)
+        {
+            Directory.CreateDirectory(Get(task, 0, result).ToString());
+            return Next(task, result);
+        }
+        static internal TaskResult DeleteDirectory(Task task, TaskResult result)
+        {
+            Directory.Delete(Get(task, 0, result).ToString());
+            return Next(task, result);
+        }
+        static internal TaskResult MoveDirectory(Task task, TaskResult result)
+        {
+            Directory.Move(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            return Next(task, result);
+        }
+        static internal TaskResult ExistsDirectory(Task task, TaskResult result)
+        {
+            var value = Directory.Exists(Get(task, 0, result).ToString());
+            return Next(task, value, result);
+        }
+
+        #endregion
 
         ///////>   Falta testar
 
@@ -290,8 +523,7 @@ namespace TaskManager.Task
         {
             var db = new FOrDB.FOrDB("TaskManager");
             db.Tables["Global"].Update(task.Name, Get(task, 0, result));
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult GetGlobal(Task task, TaskResult result)
         {
@@ -310,8 +542,7 @@ namespace TaskManager.Task
         {
             if (!Util.Global.ContainsKey(task.Name)) Util.Global.Add(task.Name, null);
             ((List<object>)Util.Global[task.Name]).Add(Get(task, 0, result));
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
         }
         static internal TaskResult GetMessage(Task task, TaskResult result)
         {
@@ -321,9 +552,7 @@ namespace TaskManager.Task
                 ((List<object>)Util.Global[task.Name]).RemoveAt(0);
                 return Next(task, value, result);
             }
-
-            ExecuteAllChild(task, result);
-            return result;
+            return Next(task, result);
 
         }
 
@@ -340,6 +569,11 @@ namespace TaskManager.Task
         static internal TaskResult Next(Task task, object value, TaskResult result)
         {
             result.Add(task.Name, value);
+            ExecuteAllChild(task, result);
+            return result;
+        }
+        static internal TaskResult Next(Task task, TaskResult result)
+        {
             ExecuteAllChild(task, result);
             return result;
         }

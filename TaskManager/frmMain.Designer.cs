@@ -83,6 +83,7 @@
             this.tbxOutput.Multiline = true;
             this.tbxOutput.Name = "tbxOutput";
             this.tbxOutput.ReadOnly = true;
+            this.tbxOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbxOutput.Size = new System.Drawing.Size(534, 169);
             this.tbxOutput.TabIndex = 5;
             // 
