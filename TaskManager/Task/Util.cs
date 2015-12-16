@@ -33,7 +33,15 @@ namespace TaskManager.Task
         {
             if (RertunValues.ContainsKey(key))
             {
-                RertunValues[key] = value;
+                key = key + value.GetHashCode();
+                if (RertunValues.ContainsKey(key))
+                {
+                    RertunValues[key] = value;
+                }
+                else
+                {
+                    RertunValues.Add(key, value);
+                }
             }
             else
             {
@@ -58,6 +66,7 @@ namespace TaskManager.Task
         public static Dictionary<string, object> Global = new Dictionary<string, object>();
         public static Dictionary<string, Func<Task, TaskResult, TaskResult>> Commands = new Dictionary<string, Func<Task, TaskResult, TaskResult>>();
         public static bool Running { get; set; } = true;
+        public static bool Exit { get; set; } = true;
         public static List<object> ToObjectList(this List<string> input)
         {
             var objectList = new List<object>();

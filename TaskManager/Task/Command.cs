@@ -29,7 +29,7 @@ namespace TaskManager.Task
             Util.Commands.Add("CreateTable", CreateTable);
             Util.Commands.Add("AddIntoList", AddIntoList);
             Util.Commands.Add("SetResource", SetResource);
-            Util.Commands.Add("ForEachItem", ForEachItem);
+            Util.Commands.Add("ForEach", ForEach);
             Util.Commands.Add("ForEachRow", ForEachRow);
             Util.Commands.Add("CreateList", CreateList);
             Util.Commands.Add("SetGlobal", SetGlobal);
@@ -40,8 +40,6 @@ namespace TaskManager.Task
             Util.Commands.Add("QuerySql", QuerySql);
             Util.Commands.Add("FromRow", FromRow);
             Util.Commands.Add("Replace", Replace);
-            Util.Commands.Add("Retask", Retask);
-            Util.Commands.Add("Return", Return);
             Util.Commands.Add("Shell", Shell);
             Util.Commands.Add("Kill", Kill);
             Util.Commands.Add("Ping", Ping);
@@ -73,11 +71,15 @@ namespace TaskManager.Task
 
             Util.Commands.Add("TaskStop", TaskStop);
             Util.Commands.Add("TaskStart", TaskStart);
+            Util.Commands.Add("Exit", TaskStart);
+            Util.Commands.Add("Return", Return);
+            Util.Commands.Add("Retask", Retask);
         }
 
         static internal TaskResult CommandExecuter(Task task, TaskResult result)
         {
-            return ExecuteAllChild(task, result);
+            Util.Exit = false;
+            return Next(task, result);
         }
         static internal TaskResult ConnectDataBase(Task task, TaskResult result)
         {
@@ -113,7 +115,7 @@ namespace TaskManager.Task
             }
             return result;
         }
-        static internal TaskResult ForEachItem(Task task, TaskResult result)
+        static internal TaskResult ForEach(Task task, TaskResult result)
         {
             foreach (var value in ((List<object>)Get(task, 0, result)))
             {
@@ -146,12 +148,20 @@ namespace TaskManager.Task
             var value = Get(task, 0, result).ToString().Replace(Get(task, 1, result).ToString(), Get(task, 2, result).ToString());
             return Next(task, value, result);
         }
-        static internal TaskResult Return(Task task, TaskResult result)
+        static internal TaskResult SendEmail(Task task, TaskResult result)
         {
-            for (int i = 0; i < task.Params.Count; i++)
-            {
-                result.AddReturn(task.Name + i, Get(task, i, result));
-            }
+            var mail = new MailMessage(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
+            var client = new SmtpClient();
+            client.EnableSsl = Convert.ToBoolean(Get(task, 2, result));
+            client.Port = Convert.ToInt32(Get(task, 3, result));
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            //client.UseDefaultCredentials = false;
+            client.Host = Get(task, 4, result).ToString();
+            client.Credentials = new NetworkCredential(Get(task, 5, result).ToString(), Get(task, 6, result).ToString());
+            mail.Subject = Get(task, 7, result).ToString();
+            mail.Body = Get(task, 8, result).ToString() + Environment.NewLine + Environment.NewLine + "---" + Environment.NewLine + "E-Mail enviado através do TaskManager (" + Environment.MachineName + ")";
+            client.Send(mail);
+
             return Next(task, result);
         }
 
@@ -250,22 +260,6 @@ namespace TaskManager.Task
 
             return Next(task, result);
         }
-        static internal TaskResult SendEmail(Task task, TaskResult result)
-        {
-            var mail = new MailMessage(Get(task, 0, result).ToString(), Get(task, 1, result).ToString());
-            var client = new SmtpClient();
-            client.EnableSsl = Convert.ToBoolean(Get(task, 2, result));
-            client.Port = Convert.ToInt32(Get(task, 3, result));
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            //client.UseDefaultCredentials = false;
-            client.Host = Get(task, 4, result).ToString();
-            client.Credentials = new NetworkCredential(Get(task, 5, result).ToString(), Get(task, 6, result).ToString());
-            mail.Subject = Get(task, 7, result).ToString();
-            mail.Body = Get(task, 8, result).ToString() + Environment.NewLine + Environment.NewLine + "---" + Environment.NewLine + "E-Mail enviado através do TaskManager (" + Environment.MachineName + ")";
-            client.Send(mail);
-
-            return Next(task, result);
-        }
         static internal TaskResult SetResource(Task task, TaskResult result)
         {
             var list = task.Params.ToList();
@@ -283,6 +277,19 @@ namespace TaskManager.Task
         static internal TaskResult TaskStop(Task task, TaskResult result)
         {
             Util.Running = false;
+            return Next(task, result);
+        }
+        static internal TaskResult Exit(Task task, TaskResult result)
+        {
+            Util.Exit = true;
+            return Next(task, result);
+        }
+        static internal TaskResult Return(Task task, TaskResult result)
+        {
+            for (int i = 0; i < task.Params.Count; i++)
+            {
+                result.AddReturn(task.Name + i, Get(task, i, result));
+            }
             return Next(task, result);
         }
 
@@ -569,11 +576,16 @@ namespace TaskManager.Task
         static internal TaskResult Next(Task task, object value, TaskResult result)
         {
             result.Add(task.Name, value);
+
+            if (Util.Exit) return result;
+
             ExecuteAllChild(task, result);
             return result;
         }
         static internal TaskResult Next(Task task, TaskResult result)
         {
+            if (Util.Exit) return result;
+
             ExecuteAllChild(task, result);
             return result;
         }

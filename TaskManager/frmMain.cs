@@ -260,28 +260,30 @@ namespace TaskManager
                 var result = tkExe.Execute();
                 foreach (var item in result.Values)
                 {
-                    if (item.Value.GetType() == typeof(List<object>))
-                    {
-                        WriteOutput(": LISTSTART: " + item.Key);
-                        foreach (var itemList in (List<object>)item.Value)
-                        {
-                            WriteOutput(": " + itemList.ToString());
-                        }
-                        WriteOutput(": LISTEND: " + item.Key);
-                    }
-                    else if (item.Value.GetType() == typeof(List<string>))
-                    {
-                        WriteOutput(": LISTSTART: " + item.Key);
-                        foreach (var itemList in (List<string>)item.Value)
-                        {
-                            WriteOutput(": " + itemList.ToString());
-                        }
-                        WriteOutput(": LISTEND: " + item.Key);
-                    }
-                    else
-                    {
-                        WriteOutput(": " + item.Value.ToString());
-                    }
+                    WriteOutput(": " + item.Value.ToString());
+
+                    //if (item.Value.GetType() == typeof(List<object>))
+                    //{
+                    //    WriteOutput(": LISTSTART: " + item.Key);
+                    //    foreach (var itemList in (List<object>)item.Value)
+                    //    {
+                    //        WriteOutput(": " + itemList.ToString());
+                    //    }
+                    //    WriteOutput(": LISTEND: " + item.Key);
+                    //}
+                    //else if (item.Value.GetType() == typeof(List<string>))
+                    //{
+                    //    WriteOutput(": LISTSTART: " + item.Key);
+                    //    foreach (var itemList in (List<string>)item.Value)
+                    //    {
+                    //        WriteOutput(": " + itemList.ToString());
+                    //    }
+                    //    WriteOutput(": LISTEND: " + item.Key);
+                    //}
+                    //else
+                    //{
+                    //    WriteOutput(": " + item.Value.ToString());
+                    //}
                 }
                 
             }
