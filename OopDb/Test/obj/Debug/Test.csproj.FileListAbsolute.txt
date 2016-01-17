@@ -1,0 +1,8 @@
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\bin\Debug\Test.exe.config
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\bin\Debug\Test.exe
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\bin\Debug\Test.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\bin\Debug\OopDb.dll
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\bin\Debug\OopDb.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\obj\Debug\Test.exe
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\Test\obj\Debug\Test.pdb

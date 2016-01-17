@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="7e9d444a-aaa9-427f-b626-034126c3dbb2" name="Task" linkedPackageId="71ca49fc-4899-4409-a2f6-cf5669bb54ee" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="d74b9b0d-e1e4-435e-a1e0-110db9a8438f">
+      <profileInstance Id="c9f07420-0abc-4328-9c80-9a49d9936bbd" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="1c0571e7-2435-4409-9c42-2d8353a6482b">
+      <profileInstance Id="4cd1e54a-1875-4a90-b92c-15f087e70a79" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="5216391c-6edc-41fa-b02b-ffa903c352ba" name="Projeto" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="254b62d4-bdb3-4b6f-8f69-52207d0c6090" />
+        <targetEnds>
+          <association Id="8c9067ad-c6f6-42c7-a532-bff8bd8ab1e0" isDerived="false" sourceEndRoleName="Projeto" targetEndRoleName="Subprojeto" isLeaf="false" isAbstract="false">
+            <classMoniker Id="bcf8ec4c-2011-4d89-b506-f29fc51018ad" LastKnownName="Subprojeto" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="fbfb6eb2-0186-48c7-8866-016632d7f08a" name="Projeto" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="fcb94794-9698-4598-9112-349edd265db4" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="3a10916c-f7b5-4628-a1ed-fb1d05e0bd6c" name="Subprojeto" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <lowerValueInternal>
+                    <literalString Id="a05d3522-6912-49d4-997a-d4eb9b45bf72" name="Lower" value="*">
+                      <elementDefinition Id="0cf49bae-fbf6-44ff-b531-f7795ae35899" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="31d30b99-0ada-4be1-9035-3ad844d3e7d5" name="Upper" value="*">
+                      <elementDefinition Id="0e230fb6-5453-47df-a05c-8de6e138da45" />
+                    </literalString>
+                  </upperValueInternal>
+                  <elementDefinition Id="18923bf1-e6df-4c35-bacd-34ec6e04ebab" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="2bbcc8d5-5691-432f-8d99-26bcee6e2420" />
+          </association>
+        </targetEnds>
+        <ownedAttributesInternal>
+          <property Id="f6e0fb0d-9a28-4526-997f-9718cf8faf7c" name="Codigo" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="b1f05a8a-4b0a-4b65-b17e-c208ea1dcc40" />
+          </property>
+          <property Id="61d23ad4-ae43-4079-af67-d0362e639dba" name="Nome" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="bee0f85f-2afa-4c77-8191-0d9f90ac1430" />
+          </property>
+        </ownedAttributesInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="bcf8ec4c-2011-4d89-b506-f29fc51018ad" name="Subprojeto" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a8dd6583-8af7-4724-9bc9-d961d9dd6b1a" />
+        <targetEnds>
+          <association Id="e71632fc-69f1-4693-b6d1-f331f103060f" isDerived="false" sourceEndRoleName="Subprojeto" targetEndRoleName="Tarefa" isLeaf="false" isAbstract="false">
+            <classMoniker Id="ea552715-328f-4a90-bb96-67695697cc50" LastKnownName="Tarefa" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="676989da-50b1-47a7-b8d8-a82a1dc6c592" name="Subprojeto" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="3fe38d30-fdf4-40c7-9216-af5b05cf7bb3" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="c3b54a9f-7cbd-4818-8712-d071f95813e7" name="Tarefa" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <lowerValueInternal>
+                    <literalString Id="32616fdb-df56-407c-86c6-f9473f8edebe" name="Lower" value="*">
+                      <elementDefinition Id="e966ac35-7993-44e3-bd73-9e5ace93755c" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="a745d8f8-31f2-4925-83da-833b912c88db" name="Upper" value="*">
+                      <elementDefinition Id="5d91769d-84bb-4855-b435-54918a9582c2" />
+                    </literalString>
+                  </upperValueInternal>
+                  <elementDefinition Id="3bcb7d5b-15fd-48fc-917c-0286b00544d4" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="4248e17a-7856-4f25-a691-69b29213e54a" />
+          </association>
+        </targetEnds>
+        <ownedAttributesInternal>
+          <property Id="8ccb00a7-a45d-4d81-8fc8-cb5d5cad7844" name="Codigo" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="b8d2a390-2fd5-4772-ba28-c4c03f766244" />
+          </property>
+          <property Id="5638b21e-501c-4e1e-adef-4432717e3c89" name="Cd_Projeto" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="4c2118bd-98a3-4eae-83bc-cf45c3920609" />
+          </property>
+          <property Id="5774c46b-4aa0-4c5e-b293-0becee5554b8" name="Nome" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="fa3e32d4-149a-42c0-a9a5-d15a3de61d4e" />
+          </property>
+        </ownedAttributesInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="ea552715-328f-4a90-bb96-67695697cc50" name="Tarefa" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="c4cc141b-e324-48f1-9397-f86e60eb9324" />
+        <ownedAttributesInternal>
+          <property Id="c098c8e7-7a07-45be-b1a1-62f0c0f44460" name="Codigo" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="8463350f-a33f-4de2-aec9-121413bfd42c" />
+          </property>
+          <property Id="9ddd0bb0-34a2-4f62-ba19-6f958f66fb20" name="Cd_Subprojeto" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="49fc46b4-e09a-4224-a332-c8bb4a688430" />
+          </property>
+          <property Id="07cf054d-0bdc-4304-9b7b-2edb53a10b14" name="Nome" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="06071d5b-7584-4b24-a50e-a22d2408056a" />
+          </property>
+        </ownedAttributesInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="c9b15532-ef69-425b-ae92-5fcbfabed617" name="Class1" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="e0ecb680-93d9-42d9-af66-afadc4188114" />
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="96beb145-754b-449a-aa49-00b8e742764f" name="Usuário" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="d48efb8e-d20f-4517-9198-fe972858fd20" />
+        <ownedAttributesInternal>
+          <property Id="87a36a04-2538-4b83-99f7-1455a3d01b26" name="Codigo" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="594156c2-a245-497b-913f-7a396b820be7" />
+          </property>
+        </ownedAttributesInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="71ca49fc-4899-4409-a2f6-cf5669bb54ee" name="TaskController">
+    <elementDefinition Id="90025c2d-29e1-4db1-bf6b-577368115d81" />
+  </package>
+</logicalClassDesignerModel>

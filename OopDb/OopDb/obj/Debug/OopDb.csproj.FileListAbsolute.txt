@@ -1,0 +1,5 @@
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\OopDb\bin\Debug\OopDb.dll
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\OopDb\bin\Debug\OopDb.pdb
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\OopDb\obj\Debug\OopDb.csprojResolveAssemblyReference.cache
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\OopDb\obj\Debug\OopDb.dll
+C:\Users\Usuario\Documents\GitHub\TaskManager\OopDb\OopDb\obj\Debug\OopDb.pdb
