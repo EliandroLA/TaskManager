@@ -12,7 +12,7 @@ namespace Test
 
             var a = new User();
             a.Value = 9;
-            a.Name = "123456";
+            a.Name = "1234567";
             a.Status = 'S';
 
             t.User = a;
@@ -45,12 +45,32 @@ namespace Test
         public Guid Id { get; set; }
         [GreaterThan(0), LessThan(10), Default(1)]
         public int Value { get; set; }
-        [MinLenght(6), MaxLenght(10), IsRequired, IsUnique]
+        [MinLenght(6), MaxLengthName, IsRequired, IsUnique]
         public string Name { get; set; }
-        [ToLower, Check('R', 'S', 'W')]
+        [Check('R', 'S', 'W'), ToUpper]
         public char Status { get; set; }
         [Precision(10,3)]
         public double Teste { get; set; }
 
+    }
+
+    class MaxLengthName : Attribute, IMaxLengthAttr
+    {
+        public object FilterOrValidate(object input)
+        {
+            Validate(input);
+            return input;
+        }
+
+        public int GetLength()
+        {
+            return 50;
+        }
+
+        public void Validate(object input)
+        {
+            if (input.ToString().Length > 50)
+                throw new Exception("Tamanho inválido para nome");
+        }
     }
 }
